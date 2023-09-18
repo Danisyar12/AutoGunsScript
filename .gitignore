@@ -1,41 +1,103 @@
-# Compiled Lua sources
-luac.out
+local ScreenGui = Instance.new("ScreenGui")
+local main = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local autoguns = Instance.new("TextButton")
+local UICorner_2 = Instance.new("UICorner")
+local Frame = Instance.new("Frame")
+local TextLabel = Instance.new("TextLabel")
 
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
+ScreenGui.Parent = game.CoreGui
 
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
+main.Name = "main"
+main.Parent = ScreenGui
+main.BackgroundColor3 = Color3.fromRGB(0, 0, 5)
+main.Position = UDim2.new(0.588, 0, 0.123595506, 0)
+main.Size = UDim2.new(0, 226, 0, 191)
 
-# Precompiled Headers
-*.gch
-*.pch
+UICorner.Parent = main
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
+autoguns.Name = "autoguns"
+autoguns.Parent = main
+autoguns.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+autoguns.Position = UDim2.new(0.0557400137, 0, 0.435176879, 0)
+autoguns.Size = UDim2.new(0, 200, 0, 60)
+autoguns.Font = Enum.Font.SourceSans
+autoguns.Text = "autoguns(OFF)"
+autoguns.TextColor3 = Color3.fromRGB(255, 0, 0)
+autoguns.TextSize = 20.000
+autoguns.MouseButton1Down:connect(function()
+	if not _G.autoguns then                
+		_G.autoguns = true
+		autoguns.Text = "autoguns(ON)"
+		while _G.autoguns == true do
+			wait(1/10)
+			workspace.Remote.ItemHandler:InvokeServer({Position = game.Players.LocalPlayer.Character.Head.Position, Parent = workspace.Prison_ITEMS.giver["Remington 870"]})
+            workspace.Remote.ItemHandler:InvokeServer({Position = game.Players.LocalPlayer.Character.Head.Position, Parent = workspace.Prison_ITEMS.giver["M4A1"]})
+            workspace.Remote.ItemHandler:InvokeServer({Position = game.Players.LocalPlayer.Character.Head.Position, Parent = workspace.Prison_ITEMS.giver["AK-47"]})
+            workspace.Remote.ItemHandler:InvokeServer({Position = game.Players.LocalPlayer.Character.Head.Position, Parent = workspace.Prison_ITEMS.giver["M9"]})
+			wait(4)
+    end
+	elseif _G.autoguns then
+		_G.autoguns = not _G.autoguns
+		autoguns.Text = "autoguns(OFF)"
+	end
+end)
+UICorner_2.Parent = autoguns
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+Frame.Parent = main
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 234)
+Frame.Position = UDim2.new(03, 0, 0, 0)
+Frame.Size = UDim2.new(0, 0, 0, 0)
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+TextLabel.Parent = main
+TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.Position = UDim2.new(0.0575221255, 0, 0.031413611, 0)
+TextLabel.Size = UDim2.new(0, 200, 0, 40)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "Made By Test_here02"
+TextLabel.TextColor3 = Color3.fromRGB(999, 0, 0)
+TextLabel.TextSize = 20.000
 
+local UserInputService = game:GetService("UserInputService")
+
+function draggable(gui)
+	local dragging
+	local dragInput
+	local dragStart
+	local startPos
+
+	local function update(input)
+		local delta = input.Position - dragStart
+		gui.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+
+	gui.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = gui.Position
+
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragging = false
+				end
+			end)
+		end
+	end)
+
+	gui.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			dragInput = input
+		end
+	end)
+
+	UserInputService.InputChanged:Connect(function(input)
+		if input == dragInput and dragging then
+			update(input)
+		end
+	end)
+end
+
+
+draggable(main)
